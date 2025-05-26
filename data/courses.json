@@ -1,0 +1,178 @@
+{
+  "courses": [
+    {
+      "id": "course-fitness-1",
+      "title": "Fundamentos del Entrenamiento Físico",
+      "description": "Aprende las técnicas correctas y progresiones para un entrenamiento físico efectivo desde nivel básico hasta avanzado.",
+      "image": "https://img.freepik.com/vector-premium/vector-curtsy-lunge-elevacion-lateral-ejercicio-clipart_1218867-3550.jpg",
+      "totalQuestions": 30,
+      "completedQuestions": 0,
+      "duration": "12 semanas",
+      "category": "Fitness",
+      "modules": [
+        {
+          "id": "module-intro",
+          "title": "Introducción",
+          "lessons": [
+            {
+              "id": "lesson-intro-1",
+              "title": "Importancia de los ejercicios fundamentales",
+              "content": "En esta lección exploraremos por qué los ejercicios fundamentales son esenciales para construir una base sólida de entrenamiento. Estos ejercicios multifuncionales trabajan múltiples grupos musculares y promueven patrones de movimiento naturales.",
+              "completed": false,
+              "quiz": {
+                "id": "quiz-intro-1",
+                "question": "¿Cuál es uno de los principales beneficios de los ejercicios fundamentales?",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "text": "Sirven principalmente para desarrollar músculos específicos aislados"
+                  },
+                  {
+                    "id": "option-2",
+                    "text": "Trabajan múltiples grupos musculares y mejoran la coordinación"
+                  },
+                  {
+                    "id": "option-3",
+                    "text": "Solo son necesarios para deportistas profesionales"
+                  },
+                  {
+                    "id": "option-4",
+                    "text": "Requieren siempre equipamiento especializado"
+                  }
+                ],
+                "correctOptionId": "option-2",
+                "completed": false
+              }
+            },
+            {
+              "id": "lesson-intro-2",
+              "title": "Establecer objetivos claros y realistas",
+              "content": "Aprende a establecer objetivos SMART (Específicos, Medibles, Alcanzables, Relevantes y con Tiempo definido) para tu entrenamiento físico y cómo ajustarlos según tu progreso.",
+              "completed": false,
+              "quiz": {
+                "id": "quiz-intro-2",
+                "question": "¿Qué significa la 'M' en el acrónimo SMART para establecer objetivos?",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "text": "Motivador"
+                  },
+                  {
+                    "id": "option-2",
+                    "text": "Medible"
+                  },
+                  {
+                    "id": "option-3",
+                    "text": "Mínimo"
+                  },
+                  {
+                    "id": "option-4",
+                    "text": "Máximo"
+                  }
+                ],
+                "correctOptionId": "option-2",
+                "completed": false
+              }
+            },
+            {
+              "id": "lesson-intro-3",
+              "title": "Importancia de la técnica, constancia y progresión",
+              "content": "Descubre por qué la técnica correcta es fundamental para prevenir lesiones, cómo la constancia determina tus resultados y por qué la progresión gradual es clave para el desarrollo físico continuo.",
+              "completed": false,
+              "quiz": {
+                "id": "quiz-intro-3",
+                "question": "¿Por qué es tan importante la técnica correcta en los ejercicios?",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "text": "Solo por razones estéticas"
+                  },
+                  {
+                    "id": "option-2",
+                    "text": "Únicamente para deportistas de élite"
+                  },
+                  {
+                    "id": "option-3",
+                    "text": "Para prevenir lesiones y maximizar resultados"
+                  },
+                  {
+                    "id": "option-4",
+                    "text": "Solo es relevante en competiciones"
+                  }
+                ],
+                "correctOptionId": "option-3",
+                "completed": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "module-basics",
+          "title": "Conceptos Básicos",
+          "lessons": [
+            {
+              "id": "lesson-basics-1",
+              "title": "Ejercicios fundamentales - Parte 1",
+              "content": "Conoce los ejercicios básicos que forman la base de cualquier programa de entrenamiento efectivo incluyendo sentadillas, flexiones y dominadas.",
+              "completed": false,
+              "quiz": {
+                "id": "quiz-basics-1",
+                "question": "¿Cuál de los siguientes es considerado un ejercicio fundamental?",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "text": "Curl de bíceps con mancuernas"
+                  },
+                  {
+                    "id": "option-2",
+                    "text": "Sentadilla"
+                  },
+                  {
+                    "id": "option-3",
+                    "text": "Extensiones de tríceps"
+                  },
+                  {
+                    "id": "option-4",
+                    "text": "Elevaciones laterales"
+                  }
+                ],
+                "correctOptionId": "option-2",
+                "completed": false
+              }
+            },
+            {
+              "id": "lesson-basics-2",
+              "title": "Ejercicios fundamentales - Parte 2",
+              "content": "Continuamos explorando ejercicios esenciales incluyendo peso muerto, press de banca y remo con barra.",
+              "completed": false,
+              "quiz": {
+                "id": "quiz-basics-2",
+                "question": "¿Qué grupos musculares principales trabaja el peso muerto?",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "text": "Solo los brazos"
+                  },
+                  {
+                    "id": "option-2",
+                    "text": "Principalmente el pecho"
+                  },
+                  {
+                    "id": "option-3",
+                    "text": "Glúteos, isquiotibiales y espalda"
+                  },
+                  {
+                    "id": "option-4",
+                    "text": "Solo los hombros"
+                  }
+                ],
+                "correctOptionId": "option-3",
+                "completed": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
