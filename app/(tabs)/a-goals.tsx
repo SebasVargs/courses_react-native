@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  ScrollView, 
+  Modal, 
+  Alert,
+  ActivityIndicator 
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet } from 'react-native';
 
 // Definir tipos/interfaces
 interface Goal {
@@ -177,9 +188,7 @@ const GoalForm = ({
 
   const handleSubmit = async () => {
     if (!formData.title.trim() || parseFloat(formData.target) <= 0) {
-      // En React Native, usar Alert en lugar de alert del navegador
-      // Alert.alert('Error', 'Por favor completa todos los campos requeridos');
-      console.warn('Por favor completa todos los campos requeridos');
+      Alert.alert('Error', 'Por favor completa todos los campos requeridos');
       return;
     }
 
@@ -205,123 +214,122 @@ const GoalForm = ({
     { value: 'hobbies', label: 'Hobbies' }
   ];
 
-  if (!visible) return null;
-
   return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContainer}>
-        <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>
-            {goal ? 'Editar Meta' : 'Nueva Meta'}
-          </h2>
-          <button onClick={onCancel} style={styles.closeButton}>
-            ✕
-          </button>
-        </div>
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>
+              {goal ? 'Editar Meta' : 'Nueva Meta'}
+            </Text>
+            <TouchableOpacity onPress={onCancel} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
-        <div style={styles.modalContent}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Título *</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Ej: Correr 5km diarios"
-              style={styles.input}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Descripción</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Describe tu meta en detalle..."
-              style={styles.textArea}
-            />
-          </div>
-
-          <div style={styles.rowContainer}>
-            <div style={{ ...styles.formGroup, ...styles.halfWidth }}>
-              <label style={styles.label}>Meta *</label>
-              <input
-                type="number"
-                value={formData.target}
-                onChange={(e) => setFormData(prev => ({ ...prev, target: e.target.value }))}
-                placeholder="100"
+          <ScrollView style={styles.modalContent}>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Título *</Text>
+              <TextInput
+                value={formData.title}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, title: text }))}
+                placeholder="Ej: Correr 5km diarios"
                 style={styles.input}
               />
-            </div>
-            <div style={{ ...styles.formGroup, ...styles.halfWidth }}>
-              <label style={styles.label}>Progreso Actual</label>
-              <input
-                type="number"
-                value={formData.current}
-                onChange={(e) => setFormData(prev => ({ ...prev, current: e.target.value }))}
-                placeholder="0"
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Descripción</Text>
+              <TextInput
+                value={formData.description}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, description: text }))}
+                placeholder="Describe tu meta en detalle..."
+                style={styles.textArea}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
+
+            <View style={styles.rowContainer}>
+              <View style={[styles.formGroup, styles.halfWidth]}>
+                <Text style={styles.label}>Meta *</Text>
+                <TextInput
+                  value={formData.target}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, target: text }))}
+                  placeholder="100"
+                  style={styles.input}
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={[styles.formGroup, styles.halfWidth]}>
+                <Text style={styles.label}>Progreso Actual</Text>
+                <TextInput
+                  value={formData.current}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, current: text }))}
+                  placeholder="0"
+                  style={styles.input}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Unidad</Text>
+              <TextInput
+                value={formData.unit}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, unit: text }))}
+                placeholder="Ej: km, libros, horas"
                 style={styles.input}
               />
-            </div>
-          </div>
+            </View>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Unidad</label>
-            <input
-              type="text"
-              value={formData.unit}
-              onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
-              placeholder="Ej: km, libros, horas"
-              style={styles.input}
-            />
-          </div>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Categoría</Text>
+              <View style={styles.categoryContainer}>
+                {categories.map((cat) => (
+                  <TouchableOpacity
+                    key={cat.value}
+                    onPress={() => setFormData(prev => ({ ...prev, category: cat.value }))}
+                    style={[
+                      styles.categoryButton,
+                      formData.category === cat.value && styles.categoryButtonActive
+                    ]}
+                  >
+                    <Text style={[
+                      styles.categoryText,
+                      formData.category === cat.value && styles.categoryTextActive
+                    ]}>
+                      {cat.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Categoría</label>
-            <div style={styles.categoryContainer}>
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, category: cat.value }))}
-                  style={{
-                    ...styles.categoryButton,
-                    ...(formData.category === cat.value ? styles.categoryButtonActive : {})
-                  }}
-                >
-                  <span style={{
-                    ...styles.categoryText,
-                    ...(formData.category === cat.value ? styles.categoryTextActive : {})
-                  }}>
-                    {cat.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Fecha límite (opcional)</Text>
+              <TextInput
+                value={formData.deadline}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, deadline: text }))}
+                placeholder="YYYY-MM-DD"
+                style={styles.input}
+              />
+            </View>
+          </ScrollView>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Fecha límite (opcional)</label>
-            <input
-              type="date"
-              value={formData.deadline}
-              onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
-              style={styles.input}
-            />
-          </div>
-        </div>
-
-        <div style={styles.modalFooter}>
-          <button onClick={onCancel} style={styles.buttonSecondary}>
-            <span style={styles.buttonSecondaryText}>Cancelar</span>
-          </button>
-          <button onClick={handleSubmit} style={styles.buttonPrimary}>
-            <span style={styles.buttonPrimaryText}>
-              {goal ? 'Actualizar' : 'Crear Meta'}
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
+          <View style={styles.modalFooter}>
+            <TouchableOpacity onPress={onCancel} style={styles.buttonSecondary}>
+              <Text style={styles.buttonSecondaryText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSubmit} style={styles.buttonPrimary}>
+              <Text style={styles.buttonPrimaryText}>
+                {goal ? 'Actualizar' : 'Crear Meta'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
@@ -358,99 +366,97 @@ const GoalCard = ({
   };
 
   const handleDelete = async () => {
-    // En React Native usar Alert.alert en lugar de window.confirm
-    // Alert.alert(
-    //   'Confirmar eliminación',
-    //   '¿Estás seguro de que quieres eliminar esta meta?',
-    //   [
-    //     { text: 'Cancelar', style: 'cancel' },
-    //     { text: 'Eliminar', style: 'destructive', onPress: () => onDelete(goal.id) }
-    //   ]
-    // );
-    
-    // Por ahora, eliminar directamente (puedes descomentar el Alert.alert arriba)
-    await onDelete(goal.id);
+    Alert.alert(
+      'Confirmar eliminación',
+      '¿Estás seguro de que quieres eliminar esta meta?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', style: 'destructive', onPress: () => onDelete(goal.id) }
+      ]
+    );
   };
 
   return (
-    <div style={styles.goalCard}>
-      <div style={styles.goalHeader}>
-        <div style={styles.goalTitleContainer}>
-          <div style={styles.goalTitleRow}>
-            <h3 style={styles.goalTitle}>{goal.title}</h3>
+    <View style={styles.goalCard}>
+      <View style={styles.goalHeader}>
+        <View style={styles.goalTitleContainer}>
+          <View style={styles.goalTitleRow}>
+            <Text style={styles.goalTitle}>{goal.title}</Text>
             {isCompleted && (
-              <span style={styles.completedIcon}>✓</span>
+              <Text style={styles.completedIcon}>✓</Text>
             )}
-          </div>
-          <div style={{
-            ...styles.categoryBadge,
-            backgroundColor: getCategoryColor(goal.category) + '20'
-          }}>
-            <span style={{
-              ...styles.categoryBadgeText,
-              color: getCategoryColor(goal.category)
-            }}>
+          </View>
+          <View style={[
+            styles.categoryBadge,
+            { backgroundColor: getCategoryColor(goal.category) + '20' }
+          ]}>
+            <Text style={[
+              styles.categoryBadgeText,
+              { color: getCategoryColor(goal.category) }
+            ]}>
               {goal.category}
-            </span>
-          </div>
-        </div>
-        <div style={styles.goalActions}>
-          <button onClick={() => onEdit(goal)} style={styles.actionButton}>
-            ✏️
-          </button>
-          <button onClick={handleDelete} style={styles.actionButton}>
-            🗑️
-          </button>
-        </div>
-      </div>
+            </Text>
+          </View>
+        </View>
+        <View style={styles.goalActions}>
+          <TouchableOpacity onPress={() => onEdit(goal)} style={styles.actionButton}>
+            <Text>✏️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
+            <Text>🗑️</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      {goal.description && (
-        <p style={styles.goalDescription}>{goal.description}</p>
-      )}
+      {goal.description ? (
+        <Text style={styles.goalDescription}>{goal.description}</Text>
+      ) : null}
 
-      <div style={styles.progressContainer}>
-        <div style={styles.progressHeader}>
-          <span style={styles.progressLabel}>Progreso</span>
-          <span style={styles.progressText}>
-            {goal.current}{goal.unit && ` ${goal.unit}`} / {goal.target}{goal.unit && ` ${goal.unit}`}
-          </span>
-        </div>
-        <div style={styles.progressBarContainer}>
-          <div 
-            style={{
-              ...styles.progressBar,
-              width: `${progress}%`,
-              backgroundColor: isCompleted ? Colors.success : Colors.primary
-            }}
+      <View style={styles.progressContainer}>
+        <View style={styles.progressHeader}>
+          <Text style={styles.progressLabel}>Progreso</Text>
+          <Text style={styles.progressText}>
+            {goal.current}{goal.unit ? ` ${goal.unit}` : ''} / {goal.target}{goal.unit ? ` ${goal.unit}` : ''}
+          </Text>
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View 
+            style={[
+              styles.progressBar,
+              { 
+                width: `${progress}%`,
+                backgroundColor: isCompleted ? Colors.success : Colors.primary
+              }
+            ]}
           />
-        </div>
-        <div style={styles.progressPercentageContainer}>
-          <span style={styles.progressPercentage}>{progress.toFixed(1)}%</span>
-        </div>
-      </div>
+        </View>
+        <View style={styles.progressPercentageContainer}>
+          <Text style={styles.progressPercentage}>{progress.toFixed(1)}%</Text>
+        </View>
+      </View>
 
-      <div style={styles.goalFooter}>
-        <div style={styles.progressButtons}>
-          <button 
-            onClick={() => handleProgressUpdate(-1)} 
+      <View style={styles.goalFooter}>
+        <View style={styles.progressButtons}>
+          <TouchableOpacity 
+            onPress={() => handleProgressUpdate(-1)} 
             style={styles.progressButtonMinus}
           >
-            <span style={styles.progressButtonText}>-1</span>
-          </button>
-          <button 
-            onClick={() => handleProgressUpdate(1)} 
+            <Text style={styles.progressButtonText}>-1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => handleProgressUpdate(1)} 
             style={styles.progressButtonPlus}
           >
-            <span style={styles.progressButtonText}>+1</span>
-          </button>
-        </div>
-        {goal.deadline && (
-          <span style={styles.deadlineText}>
+            <Text style={styles.progressButtonText}>+1</Text>
+          </TouchableOpacity>
+        </View>
+        {goal.deadline ? (
+          <Text style={styles.deadlineText}>
             Límite: {new Date(goal.deadline).toLocaleDateString()}
-          </span>
-        )}
-      </div>
-    </div>
+          </Text>
+        ) : null}
+      </View>
+    </View>
   );
 };
 
@@ -487,9 +493,10 @@ export default function GoalsManager() {
   // Mostrar loading mientras se cargan las metas
   if (loading) {
     return (
-      <div style={{...styles.container, ...styles.loadingContainer}}>
-        <div style={styles.loadingText}>Cargando metas...</div>
-      </div>
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+        <Text style={styles.loadingText}>Cargando metas...</Text>
+      </View>
     );
   }
 
@@ -497,61 +504,61 @@ export default function GoalsManager() {
   const completedGoals = goals.filter(goal => goal.current >= goal.target).length;
 
   return (
-    <div style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerTop}>
-          <div style={styles.headerTitle}>
-            <span style={styles.flagIcon}>🏁</span>
-            <h1 style={styles.title}>Mis Metas</h1>
-          </div>
-          <button
-            onClick={() => setShowForm(true)}
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <View style={styles.headerTitle}>
+            <Text style={styles.flagIcon}>🏁</Text>
+            <Text style={styles.title}>Mis Metas</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowForm(true)}
             style={styles.addButton}
           >
-            <span style={styles.addIcon}>➕</span>
-            <span style={styles.addButtonText}>Nueva Meta</span>
-          </button>
-        </div>
+            <Text style={styles.addIcon}>➕</Text>
+            <Text style={styles.addButtonText}>Nueva Meta</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Estadísticas */}
         {goals.length > 0 && (
-          <div style={styles.statsContainer}>
-            <div style={styles.statItem}>
-              <div style={styles.statNumber}>{goals.length}</div>
-              <div style={styles.statLabel}>Total</div>
-            </div>
-            <div style={styles.statItem}>
-              <div style={{...styles.statNumber, color: Colors.success}}>{completedGoals}</div>
-              <div style={styles.statLabel}>Completadas</div>
-            </div>
-            <div style={styles.statItem}>
-              <div style={{...styles.statNumber, color: Colors.warning}}>{overallProgress.toFixed(1)}%</div>
-              <div style={styles.statLabel}>Progreso</div>
-            </div>
-          </div>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{goals.length}</Text>
+              <Text style={styles.statLabel}>Total</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, {color: Colors.success}]}>{completedGoals}</Text>
+              <Text style={styles.statLabel}>Completadas</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, {color: Colors.warning}]}>{overallProgress.toFixed(1)}%</Text>
+              <Text style={styles.statLabel}>Progreso</Text>
+            </View>
+          </View>
         )}
-      </div>
+      </View>
 
       {/* Lista de metas */}
-      <div style={styles.listContent}>
+      <ScrollView style={styles.listContent}>
         {goals.length === 0 ? (
-          <div style={styles.emptyContainer}>
-            <div style={styles.emptyIcon}>🏁</div>
-            <h3 style={styles.emptyTitle}>No tienes metas establecidas</h3>
-            <p style={styles.emptySubtitle}>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>🏁</Text>
+            <Text style={styles.emptyTitle}>No tienes metas establecidas</Text>
+            <Text style={styles.emptySubtitle}>
               Establece metas para mantener tu motivación
-            </p>
-            <button
-              onClick={() => setShowForm(true)}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowForm(true)}
               style={styles.emptyButton}
             >
-              <span style={styles.emptyButtonIcon}>➕</span>
-              <span style={styles.emptyButtonText}>Crear primera meta</span>
-            </button>
-          </div>
+              <Text style={styles.emptyButtonIcon}>➕</Text>
+              <Text style={styles.emptyButtonText}>Crear primera meta</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
-          <div>
+          <View>
             {goals.map((goal) => (
               <GoalCard
                 key={goal.id}
@@ -561,9 +568,9 @@ export default function GoalsManager() {
                 onUpdateProgress={updateGoal}
               />
             ))}
-          </div>
+          </View>
         )}
-      </div>
+      </ScrollView>
 
       {/* Formulario modal */}
       <GoalForm
@@ -572,253 +579,246 @@ export default function GoalsManager() {
         onSave={handleSaveGoal}
         onCancel={handleCancelForm}
       />
-    </div>
+    </View>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    minHeight: '100vh',
+    minHeight: '100%',
     backgroundColor: Colors.backgroundLight,
-    fontFamily: 'system-ui, -apple-system, sans-serif'
   },
   loadingContainer: {
-    display: 'flex',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadingText: {
-    fontSize: '16px',
+    fontSize: 16,
     color: Colors.textSecondary,
   },
   header: {
     backgroundColor: Colors.background,
-    padding: '24px 22px',
-    borderBottom: `1px solid ${Colors.border}`,
+    padding: 24,
+    paddingHorizontal: 22,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerTop: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   headerTitle: {
-    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '8px',
   },
   flagIcon: {
-    fontSize: '24px',
+    fontSize: 24,
+    marginRight: 8,
   },
   title: {
-    fontSize: '24px',
+    fontSize: 24,
     fontWeight: 'bold',
     color: Colors.text,
-    margin: 0,
   },
   addButton: {
-    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '4px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '8px',
+    padding: 8,
   },
   addIcon: {
-    fontSize: '16px',
+    fontSize: 16,
+    marginRight: 4,
   },
   addButtonText: {
     color: Colors.primary,
     fontWeight: '600',
-    fontSize: '14px',
+    fontSize: 14,
   },
   statsContainer: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-around',
   },
   statItem: {
-    textAlign: 'center' as const,
+    alignItems: 'center',
   },
   statNumber: {
-    fontSize: '20px',
+    fontSize: 20,
     fontWeight: 'bold',
     color: Colors.primary,
   },
   statLabel: {
-    fontSize: '12px',
+    fontSize: 12,
     color: Colors.textSecondary,
-    marginTop: '2px',
+    marginTop: 2,
   },
   listContent: {
-    padding: '16px',
+    padding: 16,
   },
   goalCard: {
     backgroundColor: Colors.background,
-    borderRadius: '12px',
-    padding: '16px',
-    marginBottom: '16px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   goalHeader: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: '12px',
+    marginBottom: 12,
   },
   goalTitleContainer: {
     flex: 1,
   },
   goalTitleRow: {
-    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '8px',
-    marginBottom: '8px',
+    marginBottom: 8,
   },
   goalTitle: {
-    fontSize: '16px',
+    fontSize: 16,
     fontWeight: '600',
     color: Colors.text,
     flex: 1,
-    margin: 0,
+    marginRight: 8,
   },
   completedIcon: {
     color: Colors.success,
-    fontSize: '18px',
+    fontSize: 18,
     fontWeight: 'bold',
   },
   categoryBadge: {
-    display: 'inline-block',
-    paddingLeft: '8px',
-    paddingRight: '8px',
-    paddingTop: '4px',
-    paddingBottom: '4px',
-    borderRadius: '12px',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
   },
   categoryBadgeText: {
-    fontSize: '11px',
+    fontSize: 11,
     fontWeight: '500',
-    textTransform: 'capitalize' as const,
+    textTransform: 'capitalize',
   },
   goalActions: {
-    display: 'flex',
-    gap: '8px',
+    flexDirection: 'row',
   },
   actionButton: {
-    padding: '8px',
-    borderRadius: '8px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
+    padding: 8,
+    borderRadius: 8,
+    marginLeft: 8,
   },
   goalDescription: {
-    fontSize: '14px',
+    fontSize: 14,
     color: Colors.textSecondary,
-    marginBottom: '16px',
-    lineHeight: 1.4,
-    margin: '0 0 16px 0',
+    marginBottom: 16,
+    lineHeight: 20,
   },
   progressContainer: {
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   progressHeader: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '8px',
+    marginBottom: 8,
   },
   progressLabel: {
-    fontSize: '14px',
+    fontSize: 14,
     fontWeight: '500',
     color: Colors.text,
   },
   progressText: {
-    fontSize: '12px',
+    fontSize: 12,
     color: Colors.textSecondary,
   },
   progressBarContainer: {
-    height: '6px',
+    height: 6,
     backgroundColor: Colors.borderLight,
-    borderRadius: '3px',
-    marginBottom: '4px',
+    borderRadius: 3,
+    marginBottom: 4,
   },
   progressBar: {
     height: '100%',
-    borderRadius: '3px',
-    transition: 'width 0.3s ease',
+    borderRadius: 3,
   },
   progressPercentageContainer: {
-    textAlign: 'right' as const,
+    alignItems: 'flex-end',
   },
   progressPercentage: {
-    fontSize: '11px',
+    fontSize: 11,
     color: Colors.textLight,
   },
   goalFooter: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   progressButtons: {
-    display: 'flex',
-    gap: '8px',
+    flexDirection: 'row',
   },
   progressButtonMinus: {
-    padding: '6px 12px',
-    borderRadius: '8px',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     backgroundColor: Colors.error + '20',
-    border: 'none',
-    cursor: 'pointer',
+    marginRight: 8,
   },
   progressButtonPlus: {
-    padding: '6px 12px',
-    borderRadius: '8px',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     backgroundColor: Colors.success + '20',
-    border: 'none',
-    cursor: 'pointer',
   },
   progressButtonText: {
-    fontSize: '12px',
+    fontSize: 12,
     fontWeight: '600',
     color: Colors.text,
   },
   deadlineText: {
-    fontSize: '11px',
+    fontSize: 11,
     color: Colors.textLight,
   },
   emptyContainer: {
-    textAlign: 'center' as const,
-    padding: '64px 32px',
+    alignItems: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: 32,
   },
   emptyIcon: {
-    fontSize: '64px',
-    marginBottom: '16px',
+    fontSize: 64,
+    marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: '18px',
+    fontSize: 18,
     fontWeight: '600',
     color: Colors.text,
-    margin: '0 0 8px 0',
+    marginBottom: 8,
   },
   emptySubtitle: {
-    fontSize: '14px',
+    fontSize: 14,
     color: Colors.textSecondary,
-    marginBottom: '24px',
-    margin: '0 0 24px 0',
+    marginBottom: 24,
+    textAlign: 'center',
   },
   emptyButton: {
-    display: 'inline-flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '8px',
     backgroundColor: Colors.primary,
-    padding: '12px 20px',
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
   },
   emptyButtonIcon: {
-    fontSize: '16px',
+    fontSize: 16,
+    marginRight: 8,
   },
   emptyButtonText: {
     color: Colors.background,
@@ -826,113 +826,105 @@ const styles = {
   },
   // Modal Styles
   modalOverlay: {
-    position: 'fixed' as const,
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: '16px',
-    zIndex: 500,
+    alignItems: 'center',
+    padding: 16,
   },
   modalContainer: {
     backgroundColor: Colors.background,
-    borderRadius: '12px',
-    maxWidth: '500px',
-    width: '100%',
-    maxHeight: '72vh',
-    overflow: 'auto',
+    borderRadius: 12,
+    maxWidth: 500,
+    width: '90%',
+    maxHeight: '80%',
   },
   modalHeader: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px',
-    borderBottom: `1px solid ${Colors.border}`,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   modalTitle: {
-    fontSize: '18px',
+    fontSize: 18,
     fontWeight: '600',
     color: Colors.text,
-    margin: 0,
   },
   closeButton: {
-    padding: '8px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '20px',
+    padding: 8,
+  },
+  closeButtonText: {
+    fontSize: 20,
     color: Colors.textSecondary,
   },
   modalContent: {
-    padding: '16px',
+    padding: 16,
   },
   modalFooter: {
-    display: 'flex',
-    gap: '12px',
-    padding: '16px',
-    borderTop: `1px solid ${Colors.border}`,
+    flexDirection: 'row',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
   },
   formGroup: {
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   label: {
-    display: 'block',
-    fontSize: '14px',
+    fontSize: 14,
     fontWeight: '500',
     color: Colors.text,
-    marginBottom: '8px',
+    marginBottom: 8,
   },
   input: {
-    width: '100%',
-    border: `1px solid ${Colors.border}`,
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '14px',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
     color: Colors.text,
     backgroundColor: Colors.background,
-    boxSizing: 'border-box' as const,
   },
   textArea: {
-    width: '100%',
-    border: `1px solid ${Colors.border}`,
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '14px',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
     color: Colors.text,
     backgroundColor: Colors.background,
-    height: '80px',
-    resize: 'vertical' as const,
-    fontFamily: 'inherit',
-    boxSizing: 'border-box' as const,
+    height: 80,
+    textAlignVertical: 'top',
   },
   rowContainer: {
-    display: 'flex',
-    gap: '12px',
+    flexDirection: 'row',
   },
   halfWidth: {
     flex: 1,
+    marginRight: 6,
   },
   categoryContainer: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '8px',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   categoryButton: {
-    padding: '8px 16px',
-    borderRadius: '20px',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     backgroundColor: Colors.backgroundDark,
-    border: 'none',
-    cursor: 'pointer',
+    marginRight: 8,
+    marginBottom: 8,
   },
   categoryButtonActive: {
     backgroundColor: Colors.primary,
   },
   categoryText: {
-    fontSize: '12px',
+    fontSize: 12,
     fontWeight: '500',
     color: Colors.textSecondary,
   },
@@ -941,28 +933,32 @@ const styles = {
   },
   buttonPrimary: {
     flex: 1,
-    padding: '12px 16px',
-    borderRadius: '8px',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     backgroundColor: Colors.primary,
-    border: 'none',
-    cursor: 'pointer',
+    alignItems: 'center',
+    marginLeft: 6,
   },
   buttonSecondary: {
     flex: 1,
-    padding: '12px 16px',
-    borderRadius: '8px',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     backgroundColor: Colors.backgroundDark,
-    border: `1px solid ${Colors.border}`,
-    cursor: 'pointer',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    marginRight: 6,
   },
   buttonPrimaryText: {
     color: Colors.background,
     fontWeight: '600',
-    fontSize: '14px',
+    fontSize: 14,
   },
   buttonSecondaryText: {
     color: Colors.text,
     fontWeight: '500',
-    fontSize: '14px',
+    fontSize: 14,
   },
-};
+});

@@ -32,7 +32,7 @@ export default function UserScreen() {
         <View style={styles.profileHeader}>
           <Image 
             source={{ 
-              uri: user?.profileImage || 'https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg' 
+              uri: 'https://cdn-icons-png.flaticon.com/512/6073/6073873.png' 
             }} 
             style={styles.profileImage} 
           />
